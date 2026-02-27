@@ -1,170 +1,210 @@
-<<<<<<< HEAD
-# MedOrion Backend
+MedOrion
+Hospital Operational Intelligence System
 
-## MedOrion Overview
-MedOrion is a Hospital Operational Intelligence backend built with Spring Boot and PostgreSQL. It provides real-time department stress analysis, short-term forecasting, what-if simulation for staffing, anomaly alerts, and delay cost impact estimates for operational decision support.
+MedOrion is a real-time Hospital Operational Intelligence System designed to help administrators monitor departmental stress levels, detect operational anomalies, forecast patient load, simulate staffing decisions, and estimate financial impact caused by delays.
 
-## Architecture Design
-- Framework: Spring Boot 3.x (Java 17)
-- API Layer: REST controllers under `/api/analytics`
-- Business Layer: `AnalyticsService` for all analytical computations
-- Data Layer: Spring Data JPA repositories
-- Persistence: PostgreSQL
-- Bootstrapping: Controlled fake data seeding with `CommandLineRunner`
+It combines a Spring Boot analytics backend with a React executive dashboard to provide actionable operational insights.
 
-Package structure:
-- `entity`: JPA entities
-- `repository`: repository interfaces + query methods
-- `service`: analytical business logic
-- `controller`: REST endpoints
-- `dto`: request/response contracts
-- `config`: startup seeding
-- `enums`: enum models
+📊 Dashboard Preview
 
-## Stress Formula
-For each department:
+## Dashboard Overview
+<img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/921c9561-af18-458f-ac62-9af8bf7ed235" />
 
-`stressScore = (activePatients * avgHandlingTimeMinutes) / (availableDoctors * 60.0)`
+
+## Patient Surge Simulation
+<img width="1060" height="334" alt="image" src="https://github.com/user-attachments/assets/41184267-f5c9-4e0a-8139-4426dd01eecc" />
+
+
+## Resource Simulation Panel
+<img width="751" height="407" alt="image" src="https://github.com/user-attachments/assets/4bbcfc93-5455-400f-8f7a-c812d35a3513" />
+
+
+🏗 Architecture Overview
+Backend
+
+Spring Boot 3.x (Java 17)
+
+Spring Data JPA
+
+PostgreSQL
+
+Gradle
+
+REST APIs
+
+Frontend
+
+React (Vite)
+
+TailwindCSS
+
+Axios
+
+Recharts
+
+Framer Motion
+
+Backend Package Structure
+
+entity → JPA entities
+
+repository → Data access layer
+
+service → Analytical computation engine
+
+controller → REST endpoints
+
+config → Controlled data seeding
+
+enums → Status modeling
+
+📈 Stress Index Model
+
+Department stress is computed as:
+
+stressScore = (activePatients × avgHandlingTimeMinutes) 
+              / (availableDoctors × 60.0)
 
 Guard:
-- If `availableDoctors == 0`, `stressScore = 0`
 
-Status buckets:
-- `< 0.7` => `Healthy`
-- `0.7 to 1.2` => `Moderate`
-- `> 1.2` => `Critical`
+If availableDoctors = 0 → stressScore = 0
 
-## Forecasting Logic
-7-day moving average load:
+Stress Categories:
 
-`predictedLoad = sum(last7Days.totalPatients) / numberOfDays`
+< 0.7 → Healthy
 
-Guard:
-- If no records exist, `predictedLoad = 0`
+0.7 – 1.2 → Moderate
 
-## Simulation Explanation
-Simulation input:
-- `departmentId`
-- `additionalDoctors`
-- `shiftExtensionHours`
+1.2 → Critical
+
+This models department overload relative to handling capacity.
+
+🔮 Forecasting Logic
+
+7-day moving average:
+
+predictedLoad = sum(last7Days.totalPatients) / numberOfDays
+
+If fewer than 7 records exist, available records are averaged.
+
+Also includes a Stability Index derived from standard deviation to measure volatility.
+
+🧪 Simulation Engine
+
+Simulation Input:
+
+departmentId
+
+additionalDoctors
+
+shiftExtensionHours
 
 Computed:
-- `oldStress` from current active load/capacity
-- `newDoctorCount = currentAvailableDoctors + additionalDoctors`
-- `adjustedCapacity = newDoctorCount * (60.0 + shiftExtensionHours * 60.0)`
-- `newStress = (activePatients * avgHandlingTimeMinutes) / adjustedCapacity`
-- `improvementPercentage = ((oldStress - newStress) / oldStress) * 100`
 
-Guards:
-- If `adjustedCapacity == 0`, `newStress = 0`
-- If `oldStress == 0`, `improvementPercentage = 0`
+oldStress
 
-## Anomaly Detection Logic
+newDoctorCount
+
+adjustedCapacity
+
+newStress
+
+improvementPercentage
+
+Improvement formula:
+
+improvementPercentage = ((oldStress - newStress) / oldStress) × 100
+
+Used for operational decision support.
+
+🚨 Anomaly Detection
+
 An anomaly is flagged when:
 
-`todayTotalPatients > 1.25 * weeklyAverage`
+todayTotalPatients > 1.25 × weeklyAverage
 
-Where `weeklyAverage` is computed from recent department `DailyStats`.
+This detects abnormal demand spikes.
 
-## Financial Impact Formula
-Delay cost estimate per department:
+💰 Financial Impact Model
 
-`delayCost = avgWaitTime * totalPatients * costFactor`
+Delay cost estimate:
 
-Uses today's `DailyStats` when present, otherwise the most recent available stat.
+delayCost = avgWaitTime × totalPatients × costFactor
 
-## API Endpoints
-- `GET /api/analytics/stress`  
-  Returns stress index and category for all departments.
+Used to quantify operational inefficiency in monetary terms.
 
-- `GET /api/analytics/forecast/{departmentId}`  
-  Returns forecasted patient load from recent 7-day trend.
+🔌 API Endpoints
 
-- `POST /api/analytics/simulate`  
-  Runs staffing/shift simulation.
+Base Path:
 
-- `GET /api/analytics/anomalies`  
-  Returns departments currently crossing anomaly threshold.
+/api/analytics
+Method	Endpoint	Description
+GET	/stress	Department stress levels
+GET	/forecast/{id}	7-day forecast
+POST	/simulate	Staffing simulation
+GET	/anomalies	Current anomaly flags
+GET	/cost-impact	Delay cost per department
+POST	/generate-load	Simulate patient surge
+⚙️ Setup Instructions
+Prerequisites
 
-- `GET /api/analytics/cost-impact`  
-  Returns delay-cost impact estimates per department.
+Java 17
 
-## Setup Instructions
-Prerequisites:
-- Java 17
-- PostgreSQL running on `localhost:5432`
-- Database already created: `Medorion`
+PostgreSQL running locally
 
-Database settings are configured in `src/main/resources/application.properties`:
+Database created: Medorion
 
-```
+Update configuration in:
+
+src/main/resources/application.properties
+
+Example:
+
 spring.datasource.url=jdbc:postgresql://localhost:5432/Medorion
 spring.datasource.username=postgres
-spring.datasource.password=Rahul@#1345
+spring.datasource.password=YOUR_PASSWORD
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
-spring.jpa.properties.hibernate.format_sql=true
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation=true
-```
 
-## How to Run
+Avoid committing real passwords in public repositories.
+
+▶ Running Backend
+
 Windows:
 
-```bash
 .\gradlew.bat bootRun
-```
 
 Unix/macOS:
 
-```bash
 ./gradlew bootRun
-```
+▶ Running Frontend
+cd medorion-frontend
+npm install
+npm run dev
+🎯 Demo Flow
 
-The fake data loader seeds realistic data only when no departments exist, so restarts do not duplicate data.
+Shows baseline system status
 
-## Sample JSON Output
-`GET /api/analytics/stress`
+Trigger patient surge
 
-```json
-[
-  {
-    "departmentId": 1,
-    "departmentName": "Cardiology",
-    "activePatients": 22,
-    "availableDoctors": 4,
-    "stressScore": 2.75,
-    "category": "Critical"
-  }
-]
-```
+Observe stress increase
 
-`POST /api/analytics/simulate`
+Detect anomaly
 
-Request:
+Run simulation
 
-```json
-{
-  "departmentId": 1,
-  "additionalDoctors": 2,
-  "shiftExtensionHours": 1.5
-}
-```
+Show stress reduction
 
-Response:
+Highlight financial impact
 
-```json
-{
-  "departmentId": 1,
-  "departmentName": "Cardiology",
-  "activePatients": 22,
-  "currentAvailableDoctors": 4,
-  "newDoctorCount": 6,
-  "oldStress": 2.75,
-  "newStress": 0.92,
-  "improvementPercentage": 66.55,
-  "adjustedCapacity": 900.0
-}
-```
-=======
-# MedOrion
->>>>>>> abbc3aa8edd0a6033c7c64417f6e3a8b5319d60f
+📁 Repository Structure
+MedOrion/
+ ├── backend (Spring Boot)
+ ├── medorion-frontend (React + Tailwind)
+ ├── screenshots/
+ └── README.md
+Objective
+
+MedOrion demonstrates how real-time operational analytics and simulation modeling can support intelligent hospital resource management.
+
+It is not a CRUD application — it is a decision-support system.
