@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # MedOrion Backend
 
 ## MedOrion Overview
@@ -164,3 +165,6 @@ Response:
   "adjustedCapacity": 900.0
 }
 ```
+=======
+# MedOrion
+>>>>>>> abbc3aa8edd0a6033c7c64417f6e3a8b5319d60f
