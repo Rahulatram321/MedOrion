@@ -23,7 +23,8 @@ It combines a Spring Boot analytics backend with a React executive dashboard to 
 
 
 
-##Architecture Overview
+
+## Architecture Overview
 Backend
 
 Spring Boot 3.x (Java 17)
