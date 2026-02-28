@@ -8,15 +8,19 @@ It combines a Spring Boot analytics backend with a React executive dashboard to 
 📊 Dashboard Preview
 
 ## Dashboard Overview
-<img width="1919" height="1021" alt="image" src="https://github.com/user-attachments/assets/921c9561-af18-458f-ac62-9af8bf7ed235" />
+<img width="1919" height="1022" alt="image" src="https://github.com/user-attachments/assets/0c948ea2-de43-4ec1-9180-7408323df136" />
+
 
 
 ## Patient Surge Simulation
-<img width="1060" height="334" alt="image" src="https://github.com/user-attachments/assets/41184267-f5c9-4e0a-8139-4426dd01eecc" />
+<img width="1919" height="1020" alt="image" src="https://github.com/user-attachments/assets/cdc4fd66-dee3-4b9a-969b-c275db484f8d" />
+
+
 
 
 ## Resource Simulation Panel
-<img width="751" height="407" alt="image" src="https://github.com/user-attachments/assets/4bbcfc93-5455-400f-8f7a-c812d35a3513" />
+<img width="1919" height="1016" alt="image" src="https://github.com/user-attachments/assets/371b84d0-2076-426e-b4b2-4d51f1edb6a4" />
+
 
 
 🏗 Architecture Overview
