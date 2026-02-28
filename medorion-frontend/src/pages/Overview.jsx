@@ -1,5 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
+import ActivityFeed from '../components/ActivityFeed'
 import AnomalyPanel from '../components/AnomalyPanel'
 import FooterInsight from '../components/FooterInsight'
 import RiskDistributionBar from '../components/RiskDistributionBar'
@@ -15,13 +16,20 @@ const emptySummary = {
   totalDelayCost: 0,
 }
 
-function Overview({ refreshToken, onRefreshStateChange }) {
+function Overview({
+  refreshToken,
+  onRefreshStateChange,
+  liveMode,
+  activityEvents,
+  onActivity,
+}) {
   const [summary, setSummary] = useState(emptySummary)
   const [stress, setStress] = useState([])
   const [anomalies, setAnomalies] = useState([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [error, setError] = useState('')
+  const seenAnomaliesRef = useRef(new Set())
 
   const fetchOverview = useCallback(
     async (silent = false) => {
@@ -59,9 +67,13 @@ function Overview({ refreshToken, onRefreshStateChange }) {
   }, [fetchOverview])
 
   useEffect(() => {
+    if (!liveMode) {
+      return undefined
+    }
+
     const timer = setInterval(() => fetchOverview(true), 10000)
     return () => clearInterval(timer)
-  }, [fetchOverview])
+  }, [fetchOverview, liveMode])
 
   useEffect(() => {
     if (!refreshToken) {
@@ -76,6 +88,21 @@ function Overview({ refreshToken, onRefreshStateChange }) {
     },
     [onRefreshStateChange],
   )
+
+  useEffect(() => {
+    if (typeof onActivity !== 'function') {
+      return
+    }
+
+    anomalies.forEach((item) => {
+      const key = `${item?.departmentId ?? 'unknown'}-${item?.date ?? 'unknown'}`
+      if (seenAnomaliesRef.current.has(key)) {
+        return
+      }
+      seenAnomaliesRef.current.add(key)
+      onActivity('alert', `Anomaly detected in ${item?.departmentName || 'Unknown department'}`)
+    })
+  }, [anomalies, onActivity])
 
   const highestStressDetails = useMemo(() => {
     if (!stress.length) {
@@ -96,10 +123,14 @@ function Overview({ refreshToken, onRefreshStateChange }) {
         <div className="inline-flex items-center gap-2 text-sm text-gray-600">
           <span
             className={`h-2 w-2 rounded-full ${
-              refreshing ? 'animate-pulse bg-emerald-500' : 'bg-gray-400'
+              refreshing || liveMode ? 'animate-pulse bg-emerald-500' : 'bg-gray-400'
             }`}
           />
-          {refreshing ? 'Refreshing telemetry...' : 'Live telemetry active'}
+          {refreshing
+            ? 'Refreshing telemetry...'
+            : liveMode
+              ? 'Live telemetry active'
+              : 'Manual telemetry mode'}
         </div>
       </div>
 
@@ -130,11 +161,15 @@ function Overview({ refreshToken, onRefreshStateChange }) {
       </div>
 
       <FooterInsight summary={summary} stress={stress} />
+      <ActivityFeed events={activityEvents} />
     </section>
   )
 }
 
 Overview.defaultProps = {
+  activityEvents: [],
+  liveMode: false,
+  onActivity: () => {},
   onRefreshStateChange: () => {},
   refreshToken: 0,
 }

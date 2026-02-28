@@ -1,5 +1,6 @@
 package com.example.hospital.service;
 
+import com.example.hospital.config.FakeDataLoader;
 import com.example.hospital.dto.AnomalyResponse;
 import com.example.hospital.dto.CostImpactResponse;
 import com.example.hospital.dto.ForecastResponse;
@@ -36,17 +37,20 @@ public class AnalyticsService {
     private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
     private final DailyStatsRepository dailyStatsRepository;
+    private final FakeDataLoader fakeDataLoader;
 
     public AnalyticsService(
             DepartmentRepository departmentRepository,
             DoctorRepository doctorRepository,
             AppointmentRepository appointmentRepository,
-            DailyStatsRepository dailyStatsRepository
+            DailyStatsRepository dailyStatsRepository,
+            FakeDataLoader fakeDataLoader
     ) {
         this.departmentRepository = departmentRepository;
         this.doctorRepository = doctorRepository;
         this.appointmentRepository = appointmentRepository;
         this.dailyStatsRepository = dailyStatsRepository;
+        this.fakeDataLoader = fakeDataLoader;
     }
 
     public List<StressResponse> getStressIndex() {
@@ -325,6 +329,15 @@ public class AnalyticsService {
         response.put("newTotalActive", newTotalActive);
         response.put("message", "Patient surge simulated successfully");
         return response;
+    }
+
+    @Transactional
+    public synchronized void resetDemoData() {
+        appointmentRepository.deleteAll();
+        dailyStatsRepository.deleteAll();
+        doctorRepository.deleteAll();
+        departmentRepository.deleteAll();
+        fakeDataLoader.seedInitialData();
     }
 
     private Department getDepartmentOrThrow(Long departmentId) {

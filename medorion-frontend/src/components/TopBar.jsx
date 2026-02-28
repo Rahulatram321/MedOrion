@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { RefreshCw } from 'lucide-react'
+import { LoaderCircle, RefreshCw } from 'lucide-react'
 
 const formatClock = (date) =>
   new Intl.DateTimeFormat('en-US', {
@@ -11,7 +11,15 @@ const formatClock = (date) =>
     second: '2-digit',
   }).format(date)
 
-function TopBar({ onRefresh, refreshing, autoRefreshEnabled }) {
+function TopBar({
+  onRefresh,
+  refreshing,
+  liveMode,
+  onLiveModeChange,
+  onInjectLoad,
+  injectingLoad,
+  loadError,
+}) {
   const [now, setNow] = useState(new Date())
 
   useEffect(() => {
@@ -37,14 +45,42 @@ function TopBar({ onRefresh, refreshing, autoRefreshEnabled }) {
             </p>
           </div>
 
-          <div className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm">
-            <span
-              className={`h-2 w-2 rounded-full ${autoRefreshEnabled ? 'bg-emerald-500' : 'bg-gray-400'} ${
-                autoRefreshEnabled ? 'animate-pulse' : ''
-              }`}
-            />
-            {autoRefreshEnabled ? 'Auto-refresh every 10s' : 'Auto-refresh on overview'}
+          <div className="rounded-xl border border-gray-200 bg-white px-3 py-2 shadow-sm">
+            <div className="flex items-center gap-2">
+              <p className="text-xs font-medium text-gray-700">Live Mode</p>
+              <button
+                type="button"
+                aria-pressed={liveMode}
+                onClick={() => onLiveModeChange(!liveMode)}
+                className={`relative h-5 w-9 rounded-full border transition ${
+                  liveMode
+                    ? 'border-emerald-500/50 bg-emerald-100'
+                    : 'border-gray-300 bg-gray-100'
+                }`}
+              >
+                <span
+                  className={`absolute top-0.5 h-3.5 w-3.5 rounded-full bg-white shadow transition ${
+                    liveMode ? 'left-4' : 'left-0.5'
+                  }`}
+                />
+              </button>
+            </div>
+            {liveMode ? (
+              <p className="mt-1 text-[11px] text-gray-500">Live updating every 10s</p>
+            ) : (
+              <p className="mt-1 text-[11px] text-gray-400">Live mode is off</p>
+            )}
           </div>
+
+          <button
+            type="button"
+            onClick={onInjectLoad}
+            disabled={injectingLoad}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-800 transition hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {injectingLoad ? <LoaderCircle className="h-3.5 w-3.5 animate-spin" /> : null}
+            Inject Load Event
+          </button>
 
           <button
             type="button"
@@ -56,12 +92,17 @@ function TopBar({ onRefresh, refreshing, autoRefreshEnabled }) {
           </button>
         </div>
       </div>
+      {loadError ? <p className="mt-2 text-xs text-red-600">{loadError}</p> : null}
     </header>
   )
 }
 
 TopBar.defaultProps = {
-  autoRefreshEnabled: false,
+  injectingLoad: false,
+  liveMode: false,
+  loadError: '',
+  onInjectLoad: () => {},
+  onLiveModeChange: () => {},
   onRefresh: () => {},
   refreshing: false,
 }

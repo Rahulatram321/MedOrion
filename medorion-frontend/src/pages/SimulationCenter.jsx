@@ -9,28 +9,29 @@ const toNumber = (value, fallback = 0) => {
   return Number.isFinite(next) ? next : fallback
 }
 
-function SimulationCenter({ refreshToken, onRefreshStateChange }) {
+function SimulationCenter({
+  refreshToken,
+  onRefreshStateChange,
+  activityEvents,
+  onActivity,
+}) {
   const [departments, setDepartments] = useState([])
   const [departmentId, setDepartmentId] = useState('')
   const [additionalDoctors, setAdditionalDoctors] = useState(1)
   const [shiftExtensionHours, setShiftExtensionHours] = useState(1)
   const [result, setResult] = useState(null)
-  const [events, setEvents] = useState([])
   const [loadingDepartments, setLoadingDepartments] = useState(true)
   const [simulating, setSimulating] = useState(false)
   const [error, setError] = useState('')
 
-  const pushEvent = useCallback((message) => {
-    const eventTime = new Date()
-    setEvents((previous) => [
-      {
-        id: `${eventTime.getTime()}-${Math.random().toString(16).slice(2)}`,
-        time: eventTime.toISOString(),
-        message,
-      },
-      ...previous,
-    ])
-  }, [])
+  const pushEvent = useCallback(
+    (type, message) => {
+      if (typeof onActivity === 'function') {
+        onActivity(type, message)
+      }
+    },
+    [onActivity],
+  )
 
   const loadDepartments = useCallback(
     async (silent = false) => {
@@ -88,7 +89,8 @@ function SimulationCenter({ refreshToken, onRefreshStateChange }) {
 
     setError('')
     setSimulating(true)
-    pushEvent('Simulation request queued.')
+    const selectedDepartmentName = departments.find((item) => String(item.id) === departmentId)?.name
+    pushEvent('simulation', `Simulation run started for ${selectedDepartmentName || 'selected department'}.`)
 
     try {
       const response = await simulate({
@@ -98,6 +100,7 @@ function SimulationCenter({ refreshToken, onRefreshStateChange }) {
       })
       setResult(response || null)
       pushEvent(
+        'simulation',
         `Simulation complete for ${response?.departmentName || 'selected department'} with ${
           toNumber(response?.improvementPercentage).toFixed(2)
         }% improvement.`,
@@ -105,7 +108,7 @@ function SimulationCenter({ refreshToken, onRefreshStateChange }) {
     } catch (requestError) {
       const message = requestError.message || 'Simulation request failed.'
       setError(message)
-      pushEvent(`Simulation failed: ${message}`)
+      pushEvent('alert', `Simulation failed: ${message}`)
     } finally {
       setSimulating(false)
     }
@@ -257,12 +260,14 @@ function SimulationCenter({ refreshToken, onRefreshStateChange }) {
         </section>
       </div>
 
-      <ActivityFeed events={events} />
+      <ActivityFeed events={activityEvents} />
     </section>
   )
 }
 
 SimulationCenter.defaultProps = {
+  activityEvents: [],
+  onActivity: () => {},
   onRefreshStateChange: () => {},
   refreshToken: 0,
 }

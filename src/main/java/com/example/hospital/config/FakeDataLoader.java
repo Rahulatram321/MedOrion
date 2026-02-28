@@ -41,45 +41,49 @@ public class FakeDataLoader {
 
     @Bean
     CommandLineRunner seedHospitalData() {
-        return args -> {
-            if (departmentRepository.count() == 0) {
-                Random random = new Random(2026);
-                LocalDate today = LocalDate.now();
+        return args -> seedInitialData();
+    }
 
-                List<DepartmentSeed> seeds = List.of(
-                        new DepartmentSeed("Cardiology", 5, 30.0, 1500.0),
-                        new DepartmentSeed("Neurology", 4, 40.0, 1800.0),
-                        new DepartmentSeed("Orthopedics", 6, 25.0, 1200.0),
-                        new DepartmentSeed("General Medicine", 8, 20.0, 900.0),
-                        new DepartmentSeed("Pediatrics", 4, 30.0, 1100.0)
-                );
+    public synchronized void seedInitialData() {
+        if (departmentRepository.count() > 0) {
+            return;
+        }
 
-                for (DepartmentSeed seed : seeds) {
-                    Department department = departmentRepository.save(
-                            Department.builder()
-                                    .name(seed.name())
-                                    .totalDoctors(seed.totalDoctors())
-                                    .avgHandlingTimeMinutes(seed.avgHandlingTimeMinutes())
-                                    .costFactor(seed.costFactor())
-                                    .build()
-                    );
+        Random random = new Random(2026);
+        LocalDate today = LocalDate.now();
 
-                    List<Doctor> doctors = createDoctors(seed, department, random);
-                    doctorRepository.saveAll(doctors);
+        List<DepartmentSeed> seeds = List.of(
+                new DepartmentSeed("Cardiology", 5, 30.0, 1500.0),
+                new DepartmentSeed("Neurology", 4, 40.0, 1800.0),
+                new DepartmentSeed("Orthopedics", 6, 25.0, 1200.0),
+                new DepartmentSeed("General Medicine", 8, 20.0, 900.0),
+                new DepartmentSeed("Pediatrics", 4, 30.0, 1100.0)
+        );
 
-                    List<Appointment> appointments = createAppointments(department, doctors, random, today);
-                    appointmentRepository.saveAll(appointments);
+        for (DepartmentSeed seed : seeds) {
+            Department department = departmentRepository.save(
+                    Department.builder()
+                            .name(seed.name())
+                            .totalDoctors(seed.totalDoctors())
+                            .avgHandlingTimeMinutes(seed.avgHandlingTimeMinutes())
+                            .costFactor(seed.costFactor())
+                            .build()
+            );
 
-                    List<DailyStats> dailyStats = createDailyStats(
-                            department,
-                            random,
-                            today
-                    );
-                    List<DailyStats> savedDailyStats = dailyStatsRepository.saveAll(dailyStats);
-                    forceNeurologyAnomaly(savedDailyStats, department.getName());
-                }
-            }
-        };
+            List<Doctor> doctors = createDoctors(seed, department, random);
+            doctorRepository.saveAll(doctors);
+
+            List<Appointment> appointments = createAppointments(department, doctors, random, today);
+            appointmentRepository.saveAll(appointments);
+
+            List<DailyStats> dailyStats = createDailyStats(
+                    department,
+                    random,
+                    today
+            );
+            List<DailyStats> savedDailyStats = dailyStatsRepository.saveAll(dailyStats);
+            forceNeurologyAnomaly(savedDailyStats, department.getName());
+        }
     }
 
     private List<Doctor> createDoctors(DepartmentSeed seed, Department department, Random random) {

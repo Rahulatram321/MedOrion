@@ -1,4 +1,5 @@
 import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
 
 const categoryOrder = {
   Critical: 0,
@@ -22,6 +23,45 @@ const categoryStyles = {
 }
 
 function StressGrid({ stress, loading }) {
+  const [stressTrendMap, setStressTrendMap] = useState({})
+  const previousStressScoresRef = useRef(new Map())
+
+  useEffect(() => {
+    if (!Array.isArray(stress) || stress.length === 0) {
+      return
+    }
+
+    const detectedTrends = {}
+    stress.forEach((item) => {
+      const departmentId = item?.departmentId
+      const currentScore = Number(item?.stressScore) || 0
+      const previousScore = previousStressScoresRef.current.get(departmentId)
+
+      if (Number.isFinite(previousScore) && currentScore !== previousScore) {
+        detectedTrends[departmentId] = currentScore > previousScore ? 'up' : 'down'
+      }
+      previousStressScoresRef.current.set(departmentId, currentScore)
+    })
+
+    const changedIds = Object.keys(detectedTrends)
+    if (changedIds.length === 0) {
+      return
+    }
+
+    setStressTrendMap((previous) => ({ ...previous, ...detectedTrends }))
+    const timer = setTimeout(() => {
+      setStressTrendMap((previous) => {
+        const nextState = { ...previous }
+        changedIds.forEach((departmentId) => {
+          delete nextState[departmentId]
+        })
+        return nextState
+      })
+    }, 1000)
+
+    return () => clearTimeout(timer)
+  }, [stress])
+
   const sortedStress = [...stress].sort((a, b) => {
     const primary = (categoryOrder[a.category] ?? 99) - (categoryOrder[b.category] ?? 99)
     if (primary !== 0) return primary
@@ -29,7 +69,7 @@ function StressGrid({ stress, loading }) {
   })
 
   return (
-    <section className="glass-card rounded-2xl p-5 md:p-6">
+    <section className="glass-card rounded-2xl p-4 md:p-5">
       <h2 className="metric-title text-lg font-semibold text-gray-900">Department Stress Index</h2>
       <p className="mt-1 text-xs text-gray-400">
         Critical departments are sorted first for intervention priority.
@@ -46,13 +86,18 @@ function StressGrid({ stress, loading }) {
             ))
           : sortedStress.map((item, index) => {
               const style = categoryStyles[item.category] || categoryStyles.Moderate
+              const trendState = stressTrendMap[item.departmentId]
               return (
                 <motion.article
                   key={`${item.departmentId}-${item.departmentName}`}
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.28, delay: index * 0.05 }}
-                  className={`rounded-2xl border bg-white p-4 transition duration-200 hover:scale-[1.01] ${style.card}`}
+                  className={`rounded-2xl border bg-white p-4 transition duration-200 hover:scale-[1.01] ${style.card} ${
+                    trendState === 'up'
+                      ? 'stress-flash-up'
+                      : ''
+                  } ${trendState === 'down' ? 'stress-flash-down' : ''}`}
                 >
                   <div className="flex items-start justify-between gap-2">
                     <h3 className="text-sm font-medium uppercase tracking-wide text-gray-900">

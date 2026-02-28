@@ -7,9 +7,11 @@ import com.example.hospital.dto.SimulationRequest;
 import com.example.hospital.dto.SimulationResponse;
 import com.example.hospital.dto.StressResponse;
 import com.example.hospital.service.AnalyticsService;
+import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -70,5 +72,15 @@ public class AnalyticsController {
     @PostMapping("/generate-load")
     public Map<String, Object> generateLoad() {
         return analyticsService.generateLoad();
+    }
+
+    @PostMapping("/reset-demo")
+    public ResponseEntity<Map<String, Object>> resetDemo() {
+        analyticsService.resetDemoData();
+        Map<String, Object> payload = new LinkedHashMap<>();
+        payload.put("status", "success");
+        payload.put("message", "Demo database reset successfully");
+        payload.put("timestamp", LocalDateTime.now());
+        return ResponseEntity.ok(payload);
     }
 }
