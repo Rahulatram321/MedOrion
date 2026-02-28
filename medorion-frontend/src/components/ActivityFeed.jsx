@@ -41,7 +41,7 @@ function ActivityFeed({ events }) {
   }, [events])
 
   return (
-    <aside className="fixed bottom-6 right-6 z-40 w-[min(305px,calc(100vw-2rem))] rounded-2xl border border-gray-200 bg-white shadow-sm">
+    <aside className="rounded-2xl border border-gray-200 bg-white shadow-sm">
       <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-2.5">
         <BellRing className="h-3.5 w-3.5 text-gray-500" />
         <h3 className="metric-title text-xs font-semibold uppercase tracking-wide text-gray-900">
@@ -59,6 +59,10 @@ function ActivityFeed({ events }) {
       </div>
     </aside>
   )
+}
+
+ActivityFeed.defaultProps = {
+  events: [],
 }
 
 export default ActivityFeed

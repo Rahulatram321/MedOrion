@@ -23,6 +23,11 @@ body {
   min-width: 320px;
   min-height: 100vh;
   background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  color: #111827;
 }
 
 #root {
@@ -38,12 +43,18 @@ body {
 .dashboard-background {
   background-color: #ffffff;
   background-image:
-    radial-gradient(circle at top right, rgba(0, 0, 0, 0.04), transparent 40%),
-    radial-gradient(circle at bottom left, rgba(0, 0, 0, 0.03), transparent 40%),
-    linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: auto, auto, 40px 40px, 40px 40px;
-  background-repeat: no-repeat, no-repeat, repeat, repeat;
+    linear-gradient(rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
+  background-repeat: repeat;
+}
+
+.app-grid-bg {
+  background-color: #ffffff;
+  background-image:
+    linear-gradient(rgba(17, 24, 39, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(17, 24, 39, 0.03) 1px, transparent 1px);
+  background-size: 30px 30px;
 }
 
 .metric-title {

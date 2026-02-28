@@ -65,7 +65,7 @@ function StressGrid({ stress, loading }) {
                   <p className="metric-title mt-3 text-3xl font-bold text-gray-900">
                     {(item.stressScore ?? 0).toFixed(2)}
                   </p>
-                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-300">
+                  <div className="mt-3 grid grid-cols-2 gap-2 text-xs text-gray-500">
                     <p>Active: {item.activePatients ?? 0}</p>
                     <p>Available: {item.availableDoctors ?? 0}</p>
                   </div>

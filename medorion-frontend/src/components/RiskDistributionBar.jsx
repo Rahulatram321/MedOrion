@@ -40,7 +40,7 @@ function RiskDistributionBar({ stress, loading }) {
               />
             </div>
           </div>
-          <div className="mt-4 grid gap-2 text-xs text-gray-300 sm:grid-cols-3">
+          <div className="mt-4 grid gap-2 text-xs text-gray-500 sm:grid-cols-3">
             <p>Healthy: {healthyPct.toFixed(1)}%</p>
             <p>Moderate: {moderatePct.toFixed(1)}%</p>
             <p>Critical: {criticalPct.toFixed(1)}%</p>
