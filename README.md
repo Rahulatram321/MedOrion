@@ -63,7 +63,7 @@ config → Controlled data seeding
 
 enums → Status modeling
 
-## 📈 Stress Index Model
+## Stress Index Model
 
 Department stress is computed as:
 
@@ -84,7 +84,7 @@ Stress Categories:
 
 This models department overload relative to handling capacity.
 
-🔮 Forecasting Logic
+## Forecasting Logic
 
 7-day moving average:
 
@@ -94,7 +94,7 @@ If fewer than 7 records exist, available records are averaged.
 
 Also includes a Stability Index derived from standard deviation to measure volatility.
 
-## 🧪 Simulation Engine
+## Simulation Engine
 
 Simulation Input:
 
@@ -122,7 +122,7 @@ improvementPercentage = ((oldStress - newStress) / oldStress) × 100
 
 Used for operational decision support.
 
-## 🚨 Anomaly Detection
+## Anomaly Detection
 
 An anomaly is flagged when:
 
@@ -130,7 +130,7 @@ todayTotalPatients > 1.25 × weeklyAverage
 
 This detects abnormal demand spikes.
 
-## 💰 Financial Impact Model
+## Financial Impact Model
 
 Delay cost estimate:
 
@@ -138,7 +138,7 @@ delayCost = avgWaitTime × totalPatients × costFactor
 
 Used to quantify operational inefficiency in monetary terms.
 
-## 🔌 API Endpoints
+##  API Endpoints
 
 Base Path:
 
@@ -150,7 +150,7 @@ POST	/simulate	Staffing simulation
 GET	/anomalies	Current anomaly flags
 GET	/cost-impact	Delay cost per department
 POST	/generate-load	Simulate patient surge
-⚙️ Setup Instructions
+## Setup Instructions
 Prerequisites
 
 Java 17
@@ -186,7 +186,7 @@ Unix/macOS:
 cd medorion-frontend
 npm install
 npm run dev
-## 🎯 Demo Flow
+## Flow
 
 Shows baseline system status
 
@@ -202,7 +202,7 @@ Show stress reduction
 
 Highlight financial impact
 
-## 📁 Repository Structure
+## Repository Structure
 MedOrion/
  ├── backend (Spring Boot)
  ├── medorion-frontend (React + Tailwind)
