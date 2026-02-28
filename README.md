@@ -1,4 +1,4 @@
-MedOrion
+## MedOrion
 Hospital Operational Intelligence System
 
 MedOrion is a real-time Hospital Operational Intelligence System designed to help administrators monitor departmental stress levels, detect operational anomalies, forecast patient load, simulate staffing decisions, and estimate financial impact caused by delays.
@@ -23,7 +23,7 @@ It combines a Spring Boot analytics backend with a React executive dashboard to 
 
 
 
-🏗 Architecture Overview
+##Architecture Overview
 Backend
 
 Spring Boot 3.x (Java 17)
@@ -62,7 +62,7 @@ config → Controlled data seeding
 
 enums → Status modeling
 
-📈 Stress Index Model
+## 📈 Stress Index Model
 
 Department stress is computed as:
 
@@ -93,7 +93,7 @@ If fewer than 7 records exist, available records are averaged.
 
 Also includes a Stability Index derived from standard deviation to measure volatility.
 
-🧪 Simulation Engine
+## 🧪 Simulation Engine
 
 Simulation Input:
 
@@ -121,7 +121,7 @@ improvementPercentage = ((oldStress - newStress) / oldStress) × 100
 
 Used for operational decision support.
 
-🚨 Anomaly Detection
+## 🚨 Anomaly Detection
 
 An anomaly is flagged when:
 
@@ -129,7 +129,7 @@ todayTotalPatients > 1.25 × weeklyAverage
 
 This detects abnormal demand spikes.
 
-💰 Financial Impact Model
+## 💰 Financial Impact Model
 
 Delay cost estimate:
 
@@ -137,7 +137,7 @@ delayCost = avgWaitTime × totalPatients × costFactor
 
 Used to quantify operational inefficiency in monetary terms.
 
-🔌 API Endpoints
+## 🔌 API Endpoints
 
 Base Path:
 
@@ -158,7 +158,7 @@ PostgreSQL running locally
 
 Database created: Medorion
 
-Update configuration in:
+## Update configuration in:
 
 src/main/resources/application.properties
 
@@ -185,7 +185,7 @@ Unix/macOS:
 cd medorion-frontend
 npm install
 npm run dev
-🎯 Demo Flow
+## 🎯 Demo Flow
 
 Shows baseline system status
 
@@ -201,13 +201,13 @@ Show stress reduction
 
 Highlight financial impact
 
-📁 Repository Structure
+## 📁 Repository Structure
 MedOrion/
  ├── backend (Spring Boot)
  ├── medorion-frontend (React + Tailwind)
  ├── screenshots/
  └── README.md
-Objective
+## Objective
 
 MedOrion demonstrates how real-time operational analytics and simulation modeling can support intelligent hospital resource management.
 
