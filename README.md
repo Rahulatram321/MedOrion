@@ -5,7 +5,7 @@ MedOrion is a real-time Hospital Operational Intelligence System designed to hel
 
 It combines a Spring Boot analytics backend with a React executive dashboard to provide actionable operational insights.
 
-📊 Dashboard Preview
+## Dashboard Preview
 
 ## Dashboard Overview
 <img width="1919" height="1022" alt="image" src="https://github.com/user-attachments/assets/0c948ea2-de43-4ec1-9180-7408323df136" />
